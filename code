@@ -1,0 +1,548 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.net.URL;
+
+public class Games extends JFrame implements KeyListener {
+
+    ImageIcon backgroundImage;
+    JLabel background;
+    ImageIcon winImage;
+    JLabel win;
+
+    ImageIcon playerImage;
+    JLabel player;
+
+    JLabel score;
+
+    ImageIcon enemyImage;
+    JLabel enemy;
+    JLabel enemy2;
+    JLabel enemy3;
+    JLabel enemy4;
+    JLabel enemy5;
+    JLabel enemy6;
+
+    ImageIcon bossImage;
+    JLabel boss;
+    ImageIcon rewardImage;
+    JLabel reward;
+    JLabel health;
+
+    int x = 700, y = 700;
+
+    int move = 200;
+    int xe = 200, ye = 100;
+    int xe2 = 400;
+    int xe3 = 600;
+    int xe4 = 800;
+    int xe5 = 1000;
+    int xe6 = 1200;
+    int bossx = 10000;
+    int xreward;
+
+    int healthint = 3;
+
+    int xemax = 300;
+    int xemin = 100;
+    int strona = 0;
+    int bossstrona = 0;
+    int bossshootdelay = 0;
+    int playershootdelay = 0;
+
+    int scoreid = 0;
+    int scoreint = 0;
+
+    boolean left =false;
+    boolean right =false;
+    boolean space =false;
+
+
+    Games(){
+        super("Bambalon");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(null);
+        setContentPane(panel);
+
+        backgroundImage = new ImageIcon(loadResource("assets/space.jpg"));
+        background = new JLabel(backgroundImage);
+        background.setSize(2160, 1440);
+        panel.add(background);
+
+        rewardImage = new ImageIcon(loadResource("assets/treasure.png"));
+        reward = new JLabel(rewardImage);
+        reward.setSize(50, 50);
+        reward.setLocation(xe2, ye);
+
+        winImage = new ImageIcon(loadResource("assets/win.jpg"));
+        win = new JLabel(winImage);
+        win.setSize(540, 360);
+        win.setLocation(450,200);
+
+        score = new JLabel("Wynik: "+scoreint);
+        score.setSize(100,200);
+        score.setFont(new Font("Serif", Font.PLAIN, 25));
+        score.setBounds(100,70,300,25);
+        score.setLocation(200, 50);
+        score.setForeground(Color.BLACK);
+        background.add(score);
+
+        health = new JLabel("Życie: "+healthint);
+        health.setSize(100,200);
+        health.setFont(new Font("Serif", Font.PLAIN, 25));
+        health.setBounds(100,70,300,25);
+        health.setLocation(1200, 50);
+        health.setForeground(Color.BLACK);
+        background.add(health);
+
+        playerImage = new ImageIcon(loadResource("assets/rocket.png"));
+        player = new JLabel(playerImage);
+        player.setSize(100,100);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy = new JLabel(enemyImage);
+        enemy.setSize(50, 50);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy2 = new JLabel(enemyImage);
+        enemy2.setSize(50, 50);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy3 = new JLabel(enemyImage);
+        enemy3.setSize(50, 50);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy4 = new JLabel(enemyImage);
+        enemy4.setSize(50, 50);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy5 = new JLabel(enemyImage);
+        enemy5.setSize(50, 50);
+
+        enemyImage = new ImageIcon(loadResource("assets/alien.png"));
+        enemy6 = new JLabel(enemyImage);
+        enemy6.setSize(50, 50);
+
+        bossImage = new ImageIcon(loadResource("assets/boss.jpg"));
+        boss = new JLabel(bossImage);
+        boss.setSize(640, 376);
+        boss.setLocation(bossx , ye);
+
+        setVisible(true);
+        addKeyListener(this);
+
+        startGameLoop();
+    }
+
+    public URL loadResource(String name) {
+        return this.getClass().getResource(name);
+    }
+
+    public int startGameLoop() {
+
+            while (true) {
+                updateGame();
+                renderGame();
+                enemymove();                //rozpoczęcie petli gry
+                playermove();
+                playerschoot();
+            }
+    }
+
+    public void playermove()
+    {
+        if(left == true) {
+            x -= 10;
+        }                                   //sterowanie graczem
+        if(right == true) {
+            x += 10;
+        }
+    }
+
+    public void playerschoot()
+    {
+        if(space == true) {
+            playershootdelay++;
+        }
+    }
+
+
+    public void enemymove(){
+
+                if(strona == 0){
+                    if(move <= xemax){
+                        right();
+                    }
+                    else
+                    {
+                        strona = 1;
+                    }
+                }
+
+                if(strona == 1) {
+                    if (move >= xemin) {        //ruch przeciwników
+                        left();
+                    } else {
+                        strona = 0;
+                    }
+                }
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void left(){
+        move--;
+        xe--;
+        xe2--;
+        xe3--;                              //ruch przeciwników w lewo
+        xe4--;
+        xe5--;
+        xe6--;
+    }
+
+    public void right(){
+        move++;
+        xe++;
+        xe2++;
+        xe3++;
+        xe4++;                              //ruch przeciwników w prawo
+        xe5++;
+        xe6++;
+    }
+
+    public void bossmove(){
+        if(bossstrona == 0){
+            if(bossx <= 700){
+                bossx++;
+            }
+            else
+            {
+                bossstrona = 1;
+            }
+        }
+                                            //ruch bossa
+        if(bossstrona == 1) {
+            if (bossx >= 100) {
+                bossx--;
+            } else {
+                bossstrona = 0;
+            }
+        }
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateGame() {
+
+        score.setText("Wynik: "+scoreint);
+        background.remove(score);
+        background.add(score);
+
+        health.setText("Życie: "+healthint);
+        background.remove(health);
+        background.add(health);
+
+        if(healthint <= 0){
+            x = 20000;
+        }
+
+        if(scoreint >= 260){
+            if(bossshootdelay == 50){
+                bossshoot();
+                bossshootdelay = 0;                 //nieskonczona pętla gry
+            }
+
+            bossshootdelay++;
+            background.remove(boss);
+            background.add(boss);
+            boss.setLocation(bossx, ye);
+            bossmove();
+        }
+
+        if(scoreint == 400){
+            background.add(win);
+        }
+
+        if(playershootdelay == 20){
+            shoot();
+            playershootdelay = 0;
+        }
+
+        player.setLocation(x, y);
+        enemy.setLocation(xe, ye);
+        enemy2.setLocation(xe2, ye);
+        enemy3.setLocation(xe3, ye);
+        enemy4.setLocation(xe4, ye);
+        enemy5.setLocation(xe5, ye);
+        enemy6.setLocation(xe6, ye);
+
+        if(scoreid == 1){
+            xe = 10000;
+        }if(scoreid == 2){
+            xe2 = 10000;
+        }if(scoreid == 3){
+            xe3 = 10000;
+        }if(scoreid == 4){
+            xe4 = 10000;
+        }if(scoreid == 5){
+            xe5 = 10000;
+        }if(scoreid == 6){
+            xe6 = 10000;
+        }
+        if(scoreint == 400){
+            bossx = 10000;
+        }
+    }
+
+    private void renderGame() {
+
+        background.remove(player);
+        background.add(player);
+
+        background.remove(enemy);
+        background.add(enemy);
+
+        background.remove(enemy2);
+        background.add(enemy2);
+
+        background.remove(enemy3);
+        background.add(enemy3);                 //renderowanie obiektów
+
+        background.remove(enemy4);
+        background.add(enemy4);
+
+        background.remove(enemy5);
+        background.add(enemy5);
+
+        background.remove(enemy6);
+        background.add(enemy6);
+    }
+
+    public int shoot(){
+        ImageIcon bulletImage;
+        JLabel bullet;
+
+        bulletImage = new ImageIcon(loadResource("assets/circle.png"));
+        bullet = new JLabel(bulletImage);
+        bullet.setSize(20, 20);
+
+        background.add(bullet);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                int yy = y+40;
+                int xx = x+40;
+
+                    while (yy>0){
+                    yy--;
+
+                    bullet.setLocation(xx, yy);
+
+                        if(yy == 1){
+                            background.remove(bullet);
+                        }                                   //pociski gracza
+
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                }
+                    if(scoreint == 260)
+                    {
+                        bossx = 100;
+                        scoreint = 300;
+                    }
+                hit(xx, yy);
+            }
+        }).start();
+            return 0;
+    }
+
+    public int bossshoot(){
+        ImageIcon bulletImage;
+        JLabel bullet;
+
+        bulletImage = new ImageIcon(loadResource("assets/circle.png"));
+        bullet = new JLabel(bulletImage);
+        bullet.setSize(20, 20);
+
+        JLabel bullet2;
+        bullet2 = new JLabel(bulletImage);
+        bullet2.setSize(20, 20);
+
+        background.add(bullet);
+        background.add(bullet2);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                int bossys = ye+40;
+
+                int bossxs = bossx+40;
+                int bossxs2 = bossx+560;
+
+                while (bossys>0){
+                    bossys++;                           //pociski bossa
+
+                    bullet.setLocation(bossxs, bossys);
+                    bullet2.setLocation(bossxs2, bossys);
+
+                    if(y == bossys){
+
+                        if ((x <= bossxs) && ((x + 100) >= (bossxs + 20))) {  //health
+                            healthint--;
+                            background.remove(bullet);
+                        }
+                    }
+
+                    if(y == bossys){
+
+                        if ((x <= bossxs2) && ((x + 100) >= (bossxs2 + 20))) {  //health
+                            healthint--;
+                            background.remove(bullet2);
+                        }
+                    }
+
+                    if(bossys == 1){
+                        background.remove(bullet);;
+                        background.remove(bullet2);;
+                    }
+
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+        return 0;
+    }
+
+    public void hit(int xx, int yy){                    //obliczanie obrażeń zadanych przeciwnikom
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe <= xx) && ((xe + 50) >= (xx + 20))) {  //enemy
+
+                scoreint = scoreint + 10;
+                scoreid = 1;
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe2 <= xx) && ((xe2 + 50) >= (xx + 20))) {  //enemy2
+                scoreint = scoreint + 10;
+                xreward = xe2;
+                scoreid = 2;
+                background.add(reward);
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe3 <= xx) && ((xe3 + 50) >= (xx + 20))) {  //enemy3
+                scoreint = scoreint + 10;
+                scoreid = 3;
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe4 <= xx) && ((xe4 + 50) >= (xx + 20))) {  //enemy4
+                scoreint = scoreint + 10;
+                scoreid = 4;
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe5 <= xx) && ((xe5+ 50) >= (xx + 20))) {  //enemy5
+                scoreint = scoreint + 10;
+                scoreid = 5;
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xe6 <= xx) && ((xe6 + 50) >= (xx + 20))) {  //enemy6
+                scoreint = scoreint + 10;
+                scoreid = 6;
+            }
+        }
+
+        if((ye >= yy) && ((ye+300) >= (yy+20))) {
+
+            if ((bossx <= xx) && ((bossx + 600) >= (xx + 20))) {  //boss
+                scoreint = scoreint + 1;
+            }
+        }
+
+        if((ye >= yy) && ((ye+50) >= (yy+20))) {
+
+            if ((xreward <= xx) && ((xreward + 50) >= (xx + 20))) {  //reward
+                scoreint = scoreint + 200;
+                xreward = 10000;
+            }
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+
+        if(key == KeyEvent.VK_LEFT){
+            left = true;
+        }
+
+        if(key == KeyEvent.VK_RIGHT){
+            right = true;                           //sterowanie graczem i strzelanie
+        }
+
+        if(key == KeyEvent.VK_SPACE){
+            space = true;
+            }
+        }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        int key = e.getKeyCode();
+
+        if(key == KeyEvent.VK_LEFT){
+            left=false;
+        }
+
+        if(key == KeyEvent.VK_RIGHT){
+            right=false;                        //sterowanie graczem i strzelanie
+        }
+
+        if(key == KeyEvent.VK_SPACE){
+            space = false;
+        }
+    }
+
+    public static void main(String arg[]){
+        new Games();
+    }
+}
